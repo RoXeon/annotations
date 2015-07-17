@@ -206,7 +206,6 @@ do_rewrite_around_form(Module, Form, #annotation{name=AnnotationMod}=A) ->
     erl_syntax:application(ModAST, {atom, Pos, around_advice},
                            [erl_syntax:abstract(A),
                             {atom, Pos, Module}, {atom, Pos, FName}, Vars]),
-    io:format("Application: ~p~n", [FinalResult]),
     Patterns = [ {var, Pos, V} || V <- VarNames ],
     MainClause = erl_syntax:clause(Patterns, none,
                                    [FinalResult]),
