@@ -27,7 +27,7 @@
 -export([list/1, find_by_function/2, find/2, find/3]).
 
 %% parse_transform and runtime introspection utilities
--export([parse_transform/2, from_ast/2, 
+-export([parse_transform/2, from_ast/2,
          get_scope/1, advised_name/1, check_scope/2]).
 
 -type(target() :: atom() | {atom(), atom(), integer()}).
@@ -73,13 +73,13 @@ find(Thing, Mod, Func) when is_atom(Thing) andalso
                             is_atom(Func) ->
     filter(Thing, find_by_function(Mod, Func)).
 
--spec(process_annotation/1 :: (#annotation{}) -> #annotation{} | term()).
+-spec process_annotation(#annotation{}) -> #annotation{} | term().
 process_annotation(#annotation{ name=Name, data=Data }=A) ->
     try Name:process_annotation(A, Data)
     catch error:undef -> A
     end.
 
--spec(get_scope/1 :: (#annotation{} | atom() | tuple()) -> scope()).
+-spec get_scope(#annotation{} | atom() | tuple()) -> scope().
 get_scope(#annotation{ scope=Scope }) ->
     Scope;
 get_scope(Annotation) ->
@@ -98,8 +98,8 @@ get_scope(Annotation) ->
         '_'
     end.
 
--spec(is_annotation/1 :: (#annotation{} | atom() | tuple()) -> 
-    boolean() | {boolean(), boolean()}).
+-spec is_annotation(#annotation{} | atom() | tuple()) ->
+    boolean() | {boolean(), boolean()}.
 is_annotation(#annotation{name=Name}) -> {true, is_annotation(Name)};
 is_annotation(MaybeAnnotation) ->
     case catch(MaybeAnnotation:module_info(attributes)) of
@@ -117,16 +117,16 @@ is_annotation(MaybeAnnotation) ->
         _ -> false
     end.
 
--spec(advised_name/1 :: (atom()) -> atom()).
+-spec advised_name(atom()) -> atom().
 advised_name(FName) ->
     list_to_atom(atom_to_list(FName) ++ "__advised").
 
--spec(parse_transform/2 :: (list(term()), list({atom(),term()})) -> term()).
+-spec parse_transform(list(term()), list({atom(),term()})) -> term().
 parse_transform(AST, Options) ->
     annotations_pt:parse_transform(AST, Options).
 
--spec(from_ast/2 :: ({attribute,integer(),atom(),term()},
-                      scope()) -> #annotation{} | term()).
+-spec from_ast({attribute,integer(),atom(),term()}, scope()) ->
+    #annotation{} | term().
 from_ast({attribute, _Ln, annotation, Scope}, _) ->
     #annotation{ name=annotation, scope=Scope };
 from_ast({attribute, _Ln, AnnotationName, AnnotationData}, ActualScope) ->
